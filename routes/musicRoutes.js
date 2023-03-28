@@ -4,13 +4,6 @@ const Album = require("../models/musicModels");
 
 const router = express.Router();
 
-
-router.get("/", (req, res) => {
-    if (req.header("Accept") != "application/json") {
-        res.status(415).send();
-    }
-});
-
 router.get("/", async (req, res) => {
     try {
         const album = await Album.find();
@@ -28,6 +21,18 @@ router.get("/", async (req, res) => {
             },
             pagination: "voor latur",
         }
+
+        const acceptedHeaders = req.accepts(["json", "xml"]); // Get accepted headers
+        if (!acceptedHeaders) { // If the header is not supported, return an error
+            return res.status(406).json({ error: "Not Acceptable" });
+        }
+
+        if (acceptedHeaders === "xml") { // If the client accepts XML, send XML
+            res.set("Content-Type", "application/xml");
+            return res.send(xml(albumsCollection));
+        }
+
+        // If the client accepts JSON or the accept-header is not specified, send JSON
         res.json(albumsCollection);
     }
     catch {

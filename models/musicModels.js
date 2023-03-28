@@ -13,8 +13,7 @@ const AlbumSchema = new Schema({
     , { toJSON: { virtuals: true } });
 
 // add virtual properties to include Album, to include (dynamic) links
-AlbumSchema.virtual('_links').get(
-    function () {
+AlbumSchema.virtual('_links').get(function () {
         return {
             self: {
                 href: `${process.env.BASE_URI}albums/${this._id}`
